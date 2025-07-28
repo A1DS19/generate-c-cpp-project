@@ -1,5 +1,8 @@
-### Copy to path
-- cp generate-cpp-project.sh /usr/local/bin/generate-cpp-project
-- chmod +x /usr/local/bin/generate-cpp-project
-- source ~/<.bash_profile || .zshrc || wherever your path is>
-- generate-cpp-project <project-name>
+### Installation:
+
+1. Save both files in the same directory
+2. Make them executable: chmod +x generate-cpp-project.sh install.sh
+3. Run the installer: ./install.sh
+
+Follow the PATH instructions if needed
+Use with: generate-cpp-project my-project-name

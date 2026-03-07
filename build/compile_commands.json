@@ -1,8 +1,0 @@
-[
-{
-  "directory": "/home/dev/projects/generate-c-cpp-project/build",
-  "command": "/usr/lib64/ccache/clang++ -I/home/dev/projects/generate-c-cpp-project/testing/include -g -std=c++23 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wunused -Wuninitialized -Wshadow -Wformat=2 -g -O0 -fsanitize=address,undefined -o CMakeFiles/main.dir/src/main.cpp.o -c /home/dev/projects/generate-c-cpp-project/testing/src/main.cpp",
-  "file": "/home/dev/projects/generate-c-cpp-project/testing/src/main.cpp",
-  "output": "CMakeFiles/main.dir/src/main.cpp.o"
-}
-]

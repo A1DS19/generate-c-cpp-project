@@ -1,0 +1,86 @@
+#!/bin/bash
+
+create_docs() {
+    local name="$1"
+
+    cat > Doxyfile << EOF
+# Doxyfile for ${name}
+
+PROJECT_NAME           = "${name}"
+PROJECT_NUMBER         = 1.0.0
+PROJECT_BRIEF          = "Modern C Project"
+OUTPUT_DIRECTORY       = docs
+CREATE_SUBDIRS         = NO
+
+# Input
+INPUT                  = src include
+RECURSIVE              = YES
+FILE_PATTERNS          = *.c *.h
+EXCLUDE_PATTERNS       = */build/*
+
+# Extraction
+EXTRACT_ALL            = YES
+EXTRACT_STATIC         = YES
+EXTRACT_ANON_NSPACES   = NO
+
+# C-specific
+OPTIMIZE_OUTPUT_FOR_C  = YES
+JAVADOC_AUTOBRIEF      = YES
+MULTILINE_CPP_IS_BRIEF = NO
+
+# Source browsing
+SOURCE_BROWSER         = YES
+INLINE_SOURCES         = NO
+STRIP_CODE_COMMENTS    = NO
+REFERENCED_BY_RELATION = YES
+REFERENCES_RELATION    = YES
+
+# HTML output
+GENERATE_HTML          = YES
+HTML_OUTPUT            = html
+HTML_COLORSTYLE        = AUTO_LIGHT
+GENERATE_TREEVIEW      = YES
+FULL_SIDEBAR           = NO
+DISABLE_INDEX          = NO
+
+# Disable other formats
+GENERATE_LATEX         = NO
+GENERATE_RTF           = NO
+GENERATE_MAN           = NO
+GENERATE_XML           = NO
+
+# Graphs (requires Graphviz)
+HAVE_DOT               = YES
+DOT_NUM_THREADS        = 4
+CALL_GRAPH             = YES
+CALLER_GRAPH           = YES
+DOT_IMAGE_FORMAT       = svg
+INTERACTIVE_SVG        = YES
+
+# Warnings
+QUIET                  = NO
+WARNINGS               = YES
+WARN_IF_UNDOCUMENTED   = YES
+WARN_IF_DOC_ERROR      = YES
+EOF
+
+    cat > scripts/docs.sh << 'EOF'
+#!/bin/bash
+
+cd "$(dirname "$0")/.."
+
+if ! command -v doxygen >/dev/null 2>&1; then
+    echo "doxygen not found."
+    echo "Install with: sudo apt install doxygen graphviz"
+    exit 1
+fi
+
+echo "Generating documentation..."
+doxygen Doxyfile
+
+echo "Documentation generated in docs/html/"
+echo "Open with: xdg-open docs/html/index.html"
+EOF
+
+    chmod +x scripts/docs.sh
+}

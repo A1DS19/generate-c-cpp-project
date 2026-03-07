@@ -16,6 +16,7 @@ source "${SCRIPT_DIR}/lib/cpp/sources.sh"
 source "${SCRIPT_DIR}/lib/cpp/project_scripts.sh"
 source "${SCRIPT_DIR}/lib/cpp/makefile.sh"
 source "${SCRIPT_DIR}/lib/cpp/readme.sh"
+source "${SCRIPT_DIR}/lib/cpp/docs.sh"
 
 create_structure "$1"
 cd "$1" || exit 1
@@ -27,6 +28,7 @@ create_clang_format
 create_sources
 create_project_scripts
 create_makefile
+create_docs "$1"
 create_readme "$1"
 
 echo "C++ project '$1' created successfully!"

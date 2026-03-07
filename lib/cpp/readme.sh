@@ -48,9 +48,17 @@ make debug      # Build and run with debugger
 make release    # Build optimized version
 make test       # Build and run tests
 make format     # Format code with clang-format
+make docs       # Generate HTML documentation (also runs on make build)
 make setup-lsp  # Setup clangd configuration
 make check      # Check build environment
 \`\`\`
+
+### Documentation
+\`\`\`bash
+sudo apt install doxygen graphviz
+make docs       # Generate HTML docs (also runs automatically on make build)
+\`\`\`
+Open \`docs/html/index.html\` in your browser.
 
 ### Using Scripts Directly
 \`\`\`bash

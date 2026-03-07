@@ -55,6 +55,13 @@ make memcheck   # Memory leak detection (Linux/macOS)
 make valgrind   # Comprehensive memory analysis
 \`\`\`
 
+### Documentation
+\`\`\`bash
+sudo apt install doxygen graphviz
+make docs       # Generate HTML docs (also runs automatically on make build)
+\`\`\`
+Open \`docs/html/index.html\` in your browser.
+
 ### Debugging
 \`\`\`bash
 make debug      # Run with debugger (gdb/lldb)

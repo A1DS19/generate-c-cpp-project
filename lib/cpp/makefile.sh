@@ -36,6 +36,7 @@ endif
 # Build configurations
 BUILD_TYPE ?= Debug
 CMAKE_FLAGS := -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+HAS_DOXYGEN := $(shell command -v doxygen >/dev/null 2>&1 && echo "yes" || echo "no")
 
 # Default target
 .PHONY: all
@@ -54,6 +55,7 @@ help:
 	@echo "  test        - Build and run tests"
 	@echo "  format      - Format code with clang-format"
 	@echo "  setup-lsp   - Setup clangd configuration"
+	@echo "  docs        - Generate HTML documentation (requires doxygen)"
 	@echo "  check       - Check build environment"
 	@echo "  help        - Show this help message"
 
@@ -63,6 +65,11 @@ build: $(BUILD_DIR)/Makefile
 	@echo "Building $(PROJECT_NAME) for $(PLATFORM)..."
 	@cmake --build $(BUILD_DIR) --config $(BUILD_TYPE)
 	@echo "Build complete!"
+ifeq ($(HAS_DOXYGEN),yes)
+	@echo "Generating documentation..."
+	@doxygen Doxyfile
+	@echo "Docs: docs/html/index.html"
+endif
 
 # Configure CMake
 $(BUILD_DIR)/Makefile:
@@ -90,7 +97,7 @@ rebuild: clean build
 
 # Run target
 .PHONY: run
-run: build
+run: rebuild
 	@echo "Running $(PROJECT_NAME)..."
 ifeq ($(PLATFORM),Windows)
 	@$(BIN_DIR)\main$(EXECUTABLE_EXT)
@@ -143,7 +150,6 @@ setup-lsp:
 # Check build environment
 .PHONY: check
 check:
-	@echo "Checking build environment for $(PLATFORM)..."
 	@command -v cmake >/dev/null 2>&1 && echo "CMake found" || echo "CMake not found"
 	@command -v make >/dev/null 2>&1 && echo "Make found" || echo "Make not found"
 ifeq ($(PLATFORM),Windows)
@@ -155,6 +161,17 @@ else
 endif
 	@command -v clang-format >/dev/null 2>&1 && echo "clang-format found" || echo "clang-format not found (optional)"
 
-.PHONY: all help build clean rebuild run debug release test format setup-lsp check
+# Documentation target
+.PHONY: docs
+docs:
+	@echo "Generating documentation..."
+	@if command -v doxygen >/dev/null 2>&1; then \
+		doxygen Doxyfile; \
+		echo "Documentation generated in docs/html/"; \
+	else \
+		echo "doxygen not found. Install with: sudo apt install doxygen graphviz"; \
+	fi
+
+.PHONY: all help build clean rebuild run debug release test format setup-lsp check docs
 EOF
 }

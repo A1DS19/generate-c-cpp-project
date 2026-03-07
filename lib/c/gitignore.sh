@@ -55,5 +55,9 @@ coverage/
 # Analysis results
 analysis-results/
 valgrind-report.log
+
+# Documentation
+docs/html/
+docs/latex/
 EOF
 }

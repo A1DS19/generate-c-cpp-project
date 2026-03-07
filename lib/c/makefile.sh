@@ -58,6 +58,7 @@ HAS_VALGRIND := $(shell $(SHELL_CHECK) valgrind >$(NULL_DEVICE) 2>&1 && echo "ye
 HAS_GDB := $(shell $(SHELL_CHECK) gdb >$(NULL_DEVICE) 2>&1 && echo "yes" || echo "no")
 HAS_LLDB := $(shell $(SHELL_CHECK) lldb >$(NULL_DEVICE) 2>&1 && echo "yes" || echo "no")
 HAS_GCOV := $(shell $(SHELL_CHECK) gcov >$(NULL_DEVICE) 2>&1 && echo "yes" || echo "no")
+HAS_DOXYGEN := $(shell $(SHELL_CHECK) doxygen >$(NULL_DEVICE) 2>&1 && echo "yes" || echo "no")
 
 # Colors for output (if terminal supports it)
 ifndef NO_COLOR
@@ -117,6 +118,7 @@ help:
 	@echo "$(BOLD)$(GREEN)Development:$(RESET)"
 	@echo "  $(CYAN)watch$(RESET)       - Watch for changes and auto-build"
 	@echo "  $(CYAN)benchmark$(RESET)   - Run performance benchmarks"
+	@echo "  $(CYAN)docs$(RESET)        - Generate HTML documentation (requires doxygen)"
 	@echo "  $(CYAN)help$(RESET)        - Show this help message"
 
 # Build target
@@ -125,6 +127,11 @@ build: check-cmake $(BUILD_DIR)/Makefile
 	@echo "$(BOLD)$(BLUE)Building $(PROJECT_NAME) for $(PLATFORM)...$(RESET)"
 	@cmake --build $(BUILD_DIR) --config $(BUILD_TYPE)
 	@echo "$(GREEN)Build complete!$(RESET)"
+ifeq ($(HAS_DOXYGEN),yes)
+	@echo "$(BOLD)$(BLUE)Generating documentation...$(RESET)"
+	@doxygen Doxyfile
+	@echo "$(GREEN)Docs: docs/html/index.html$(RESET)"
+endif
 
 # Configure CMake
 $(BUILD_DIR)/Makefile: CMakeLists.txt
@@ -171,7 +178,7 @@ rebuild: clean build
 
 # Run target
 .PHONY: run
-run: build
+run: rebuild
 	@echo "$(BOLD)$(BLUE)Running $(PROJECT_NAME)...$(RESET)"
 ifeq ($(PLATFORM),Windows)
 	@$(BIN_DIR)\main$(EXECUTABLE_EXT)
@@ -445,6 +452,17 @@ else
 	@echo "$(YELLOW)Watch functionality not implemented for Windows$(RESET)"
 endif
 
+# Documentation target
+.PHONY: docs
+docs:
+	@echo "$(BOLD)$(BLUE)Generating documentation...$(RESET)"
+	@if command -v doxygen >$(NULL_DEVICE) 2>&1; then \
+		doxygen Doxyfile; \
+		echo "$(GREEN)Documentation generated in docs/html/$(RESET)"; \
+	else \
+		echo "$(RED)doxygen not found. Install with: sudo apt install doxygen graphviz$(RESET)"; \
+	fi
+
 # Benchmark target (placeholder)
 .PHONY: benchmark
 benchmark: release
@@ -463,6 +481,6 @@ endif
 
 .PHONY: all help build clean distclean rebuild run debug valgrind memcheck release test \
         format analyze lint coverage install uninstall deps check info watch \
-        benchmark check-cmake
+        benchmark docs check-cmake
 EOF
 }

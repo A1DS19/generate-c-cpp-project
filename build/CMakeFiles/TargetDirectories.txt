@@ -1,0 +1,4 @@
+/home/dev/projects/generate-c-cpp-project/build/CMakeFiles/main.dir
+/home/dev/projects/generate-c-cpp-project/build/CMakeFiles/dev-setup.dir
+/home/dev/projects/generate-c-cpp-project/build/CMakeFiles/edit_cache.dir
+/home/dev/projects/generate-c-cpp-project/build/CMakeFiles/rebuild_cache.dir

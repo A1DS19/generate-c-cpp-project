@@ -39,5 +39,9 @@ Thumbs.db
 # Generated
 compile_commands.json
 .clang_complete
+
+# Documentation
+docs/html/
+docs/latex/
 EOF
 }

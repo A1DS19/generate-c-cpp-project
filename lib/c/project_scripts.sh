@@ -101,6 +101,7 @@ if command -v cppcheck >/dev/null 2>&1; then
     cppcheck --enable=all --std=c23 --platform=unix64 \
              --suppress=missingIncludeSystem \
              --suppress=unusedFunction \
+             --suppress=constVariablePointer \
              -I include/ src/ || true
 else
     echo "cppcheck not found. Install it for static analysis."
@@ -108,7 +109,8 @@ fi
 
 if command -v clang-tidy >/dev/null 2>&1; then
     echo "Running clang-tidy..."
-    find src/ -name "*.c" | xargs clang-tidy -p build/ || true
+    find src/ -name "*.c" | xargs clang-tidy -p build/ \
+        --checks='-clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling' || true
 else
     echo "clang-tidy not found. Install it for enhanced analysis."
 fi

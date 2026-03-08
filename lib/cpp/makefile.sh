@@ -35,7 +35,11 @@ endif
 
 # Build configurations
 BUILD_TYPE ?= Debug
+CXXFLAGS ?=
 CMAKE_FLAGS := -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+ifneq ($(CXXFLAGS),)
+    CMAKE_FLAGS += -DCMAKE_CXX_FLAGS="$(CXXFLAGS)"
+endif
 HAS_DOXYGEN := $(shell command -v doxygen >/dev/null 2>&1 && echo "yes" || echo "no")
 
 # Default target
@@ -116,7 +120,7 @@ ifeq ($(PLATFORM),Windows)
 else ifeq ($(PLATFORM),macOS)
 	@lldb ./$(BIN_DIR)/main$(EXECUTABLE_EXT)
 else
-	@gdb -q ./$(BIN_DIR)/main$(EXECUTABLE_EXT)
+	@gdb -tui ./$(BIN_DIR)/main$(EXECUTABLE_EXT)
 endif
 
 # Release build
@@ -172,6 +176,20 @@ docs:
 		echo "doxygen not found. Install with: sudo apt install doxygen graphviz"; \
 	fi
 
-.PHONY: all help build clean rebuild run debug release test format setup-lsp check docs
+# Open documentation in browser
+.PHONY: open-docs
+open-docs:
+	@if [ -f docs/html/index.html ]; then \
+		echo "Opening documentation..."; \
+		case "$(PLATFORM)" in \
+			macOS)   open docs/html/index.html ;; \
+			Windows) start docs/html/index.html ;; \
+			*)       xdg-open docs/html/index.html ;; \
+		esac; \
+	else \
+		echo "docs/html/index.html not found. Run 'make docs' first."; \
+	fi
+
+.PHONY: all help build clean rebuild run debug release test format setup-lsp check docs open-docs
 EOF
 }

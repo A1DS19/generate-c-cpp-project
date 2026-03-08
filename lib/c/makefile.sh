@@ -46,7 +46,11 @@ endif
 
 # Build configurations
 BUILD_TYPE ?= Debug
+CFLAGS ?=
 CMAKE_FLAGS := -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+ifneq ($(CFLAGS),)
+    CMAKE_FLAGS += -DCMAKE_C_FLAGS="$(CFLAGS)"
+endif
 
 # Tool detection
 HAS_CMAKE := $(shell $(SHELL_CHECK) cmake >$(NULL_DEVICE) 2>&1 && echo "yes" || echo "no")
@@ -119,6 +123,7 @@ help:
 	@echo "  $(CYAN)watch$(RESET)       - Watch for changes and auto-build"
 	@echo "  $(CYAN)benchmark$(RESET)   - Run performance benchmarks"
 	@echo "  $(CYAN)docs$(RESET)        - Generate HTML documentation (requires doxygen)"
+	@echo "  $(CYAN)open-docs$(RESET)   - Open documentation in browser"
 	@echo "  $(CYAN)help$(RESET)        - Show this help message"
 
 # Build target
@@ -202,7 +207,7 @@ else
 endif
 else
 ifeq ($(HAS_GDB),yes)
-	@gdb -q ./$(BIN_DIR)/main$(EXECUTABLE_EXT)
+	@gdb -tui ./$(BIN_DIR)/main$(EXECUTABLE_EXT)
 else
 	@echo "$(RED)gdb not found. Install it with: sudo apt install gdb$(RESET)"
 endif
@@ -210,6 +215,7 @@ endif
 
 # Valgrind target (Linux/macOS only)
 .PHONY: valgrind
+valgrind: CMAKE_FLAGS += -DENABLE_SANITIZERS=OFF
 valgrind: BUILD_TYPE = Debug
 valgrind: build
 ifeq ($(PLATFORM),Windows)
@@ -301,7 +307,6 @@ analyze: build
 	else \
 		echo "$(YELLOW)Analysis script not found$(RESET)"; \
 	fi
-	@echo "$(GREEN)Static analysis complete!$(RESET)"
 
 # Lint target
 .PHONY: lint
@@ -463,6 +468,20 @@ docs:
 		echo "$(RED)doxygen not found. Install with: sudo apt install doxygen graphviz$(RESET)"; \
 	fi
 
+# Open documentation in browser
+.PHONY: open-docs
+open-docs:
+	@if [ -f docs/html/index.html ]; then \
+		echo "$(BOLD)$(BLUE)Opening documentation...$(RESET)"; \
+		case "$(PLATFORM)" in \
+			macOS)   open docs/html/index.html ;; \
+			Windows) start docs/html/index.html ;; \
+			*)       xdg-open docs/html/index.html ;; \
+		esac; \
+	else \
+		echo "$(RED)docs/html/index.html not found. Run 'make docs' first.$(RESET)"; \
+	fi
+
 # Benchmark target (placeholder)
 .PHONY: benchmark
 benchmark: release
@@ -481,6 +500,6 @@ endif
 
 .PHONY: all help build clean distclean rebuild run debug valgrind memcheck release test \
         format analyze lint coverage install uninstall deps check info watch \
-        benchmark docs check-cmake
+        benchmark docs open-docs check-cmake
 EOF
 }

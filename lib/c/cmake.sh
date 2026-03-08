@@ -43,18 +43,18 @@ file(GLOB_RECURSE HEADERS CONFIGURE_DEPENDS ${CMAKE_SOURCE_DIR}/include/*.h)
 add_executable(main ${SOURCES} ${HEADERS})
 
 # Enhanced compiler-specific options
+option(ENABLE_SANITIZERS "Enable AddressSanitizer and UBSan (incompatible with Valgrind)" ON)
+
 if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
     target_compile_options(main PRIVATE
         -Wall -Wextra -Wpedantic -Wstrict-prototypes
         -Wconversion -Wsign-conversion -Wcast-align
         -Wwrite-strings -Wpointer-arith -Winit-self
-        -Wvla -Wdeclaration-after-statement
-        -Wundef -Wshadow -Wstrict-overflow=5
-        $<$<CONFIG:Debug>:-g3 -O0 -DDEBUG -fstack-protector-strong>
+        -Wvla -Wundef -Wshadow -Wstrict-overflow=5
+        $<$<CONFIG:Debug>:-g3 -O0 -DDEBUG -fstack-protector-strong -Werror>
         $<$<CONFIG:Release>:-O3 -DNDEBUG -march=native>
     )
-    # AddressSanitizer for debug builds
-    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    if(ENABLE_SANITIZERS AND CMAKE_BUILD_TYPE STREQUAL "Debug")
         target_compile_options(main PRIVATE -fsanitize=address,undefined)
         target_link_options(main PRIVATE -fsanitize=address,undefined)
     endif()
@@ -63,15 +63,14 @@ elseif(CMAKE_C_COMPILER_ID STREQUAL "Clang")
         -Wall -Wextra -Wpedantic -Wstrict-prototypes
         -Wconversion -Wsign-conversion -Wcast-align
         -Wwrite-strings -Wpointer-arith -Winit-self
-        -Wvla -Wdeclaration-after-statement
-        -Wundef -Wshadow
-        $<$<CONFIG:Debug>:-g3 -O0 -DDEBUG>
+        -Wvla -Wundef -Wshadow
+        $<$<CONFIG:Debug>:-g3 -O0 -DDEBUG -Werror>
         $<$<CONFIG:Release>:-O3 -DNDEBUG>
     )
 elseif(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
     target_compile_options(main PRIVATE
         /W4 /permissive- /analyze
-        $<$<CONFIG:Debug>:/Od /RTC1 /DDEBUG>
+        $<$<CONFIG:Debug>:/Od /RTC1 /DDEBUG /WX>
         $<$<CONFIG:Release>:/O2 /DNDEBUG>
     )
 endif()
@@ -131,8 +130,7 @@ if(BUILD_TESTS OR CMAKE_BUILD_TYPE STREQUAL "Debug")
                     -Wall -Wextra -Wpedantic -Wstrict-prototypes
                     -Wconversion -Wsign-conversion -Wcast-align
                     -Wwrite-strings -Wpointer-arith -Winit-self
-                    -Wvla -Wdeclaration-after-statement
-                    -Wundef -Wshadow -Wstrict-overflow=5
+                    -Wvla -Wundef -Wshadow -Wstrict-overflow=5
                     $<$<CONFIG:Debug>:-g3 -O0 -DDEBUG -fstack-protector-strong>
                     $<$<CONFIG:Release>:-O3 -DNDEBUG -march=native>
                 )

@@ -66,21 +66,21 @@ HAS_DOXYGEN := $(shell $(SHELL_CHECK) doxygen >$(NULL_DEVICE) 2>&1 && echo "yes"
 
 # Colors for output (if terminal supports it)
 ifndef NO_COLOR
-    RED := \033[31m
-    GREEN := \033[32m
-    YELLOW := \033[33m
-    BLUE := \033[34m
-    CYAN := \033[36m
-    RESET := \033[0m
-    BOLD := \033[1m
+    RED    := $(shell printf '\033[31m')
+    GREEN  := $(shell printf '\033[32m')
+    YELLOW := $(shell printf '\033[33m')
+    BLUE   := $(shell printf '\033[34m')
+    CYAN   := $(shell printf '\033[36m')
+    RESET  := $(shell printf '\033[0m')
+    BOLD   := $(shell printf '\033[1m')
 else
-    RED :=
-    GREEN :=
+    RED    :=
+    GREEN  :=
     YELLOW :=
-    BLUE :=
-    CYAN :=
-    RESET :=
-    BOLD :=
+    BLUE   :=
+    CYAN   :=
+    RESET  :=
+    BOLD   :=
 endif
 
 # Default target

@@ -38,19 +38,59 @@ make run
 ## Development
 
 ### Available Make Targets
+
+**Building**
 \`\`\`bash
-make help       # Show all available commands
-make build      # Build the project
-make clean      # Clean build artifacts
-make rebuild    # Clean and build
-make run        # Build and run
-make debug      # Build and run with debugger
-make release    # Build optimized version
-make test       # Build and run tests
-make format     # Format code with clang-format
-make docs       # Generate HTML documentation (also runs on make build)
-make setup-lsp  # Setup clangd configuration
-make check      # Check build environment
+make build      # Configure CMake and build the project (default)
+make rebuild    # Clean then build from scratch
+make release    # Build optimized release binary (O2, no debug symbols)
+make install    # Install binary to /usr/local/bin (requires sudo)
+make uninstall  # Remove installed binary (requires sudo)
+\`\`\`
+
+**Running & Testing**
+\`\`\`bash
+make run        # Build and run the main executable
+make test       # Build and run the test suite
+make debug      # Build and launch with gdb (Linux) or lldb (macOS)
+make valgrind   # Run under Valgrind for memory error detection
+make memcheck   # Comprehensive memory analysis (Valgrind or scripts/memcheck.sh)
+\`\`\`
+
+**Code Quality**
+\`\`\`bash
+make format     # Auto-format all .cpp/.hpp/.h files with clang-format
+make analyze    # Run static analysis (scripts/analyze.sh)
+make lint       # Alias for analyze
+make coverage   # Generate code coverage report (scripts/coverage.sh)
+make setup-lsp  # Write .clangd config for editor LSP support
+\`\`\`
+
+**Verilog**
+\`\`\`bash
+make sim              # Compile and simulate .v files in sim/ with iverilog
+make wave             # Run sim then open the VCD waveform in GTKWave
+make lint-verilog     # Lint Verilog sources with Verilator (--lint-only -Wall)
+make synth            # Synthesize with Yosys, outputs build/<top>.json
+\`\`\`
+Override the top module: \`make sim VERILOG_TOP=mymodule\`
+
+**Maintenance**
+\`\`\`bash
+make clean      # Remove build artifacts, keep directory structure
+make distclean  # Full clean including CMake cache (forces full reconfigure)
+make deps       # Show required and optional build dependencies
+make check      # Detect installed tools and report what is/isn't found
+make info       # Show project name, platform, build type, file counts
+\`\`\`
+
+**Development**
+\`\`\`bash
+make watch      # Auto-rebuild when source files change (requires inotify-tools)
+make benchmark  # Build release and run benchmarks (implement in scripts/)
+make docs       # Generate HTML API docs with Doxygen (also runs on build)
+make open-docs  # Open docs/html/index.html in the default browser
+make help       # Print this target list with short descriptions
 \`\`\`
 
 ### Documentation

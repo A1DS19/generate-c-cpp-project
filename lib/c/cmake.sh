@@ -89,6 +89,24 @@ if(UNIX)
     target_link_libraries(main PRIVATE m)
 endif()
 
+# Vendor libraries — auto-detected from vendor/*/src/ and vendor/*/include/
+# To add a new library: drop it into vendor/<name>/src/ and vendor/<name>/include/
+# All vendor sources are compiled into a single static library called "vendor".
+# -w suppresses all warnings since we don't own this code.
+file(GLOB_RECURSE VENDOR_SOURCES ${CMAKE_SOURCE_DIR}/vendor/*/src/*.c)
+if(VENDOR_SOURCES)
+    add_library(vendor STATIC ${VENDOR_SOURCES})
+    # Add every vendor/<lib>/include as a public include path
+    file(GLOB VENDOR_DIRS LIST_DIRECTORIES true ${CMAKE_SOURCE_DIR}/vendor/*)
+    foreach(VENDOR_DIR ${VENDOR_DIRS})
+      if(IS_DIRECTORY ${VENDOR_DIR})
+        target_include_directories(vendor PUBLIC ${VENDOR_DIR}/include)
+      endif()
+    endforeach()
+    set_target_properties(vendor PROPERTIES COMPILE_FLAGS "-w")
+    target_link_libraries(main PRIVATE vendor)
+endif()
+
 # Copy compile_commands.json to root for LSP
 add_custom_command(
     TARGET main POST_BUILD
